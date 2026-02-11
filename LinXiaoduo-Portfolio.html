@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>林晓铎 - 视频创作者（导演、摄影、剪辑）</title>
+    <style>
+        /* 全局样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        /* 页面背景和整体样式 */
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* 导航栏样式 */
+        header {
+            background-color: #222;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        /* 导航菜单 */
+        nav {
+            background-color: #333;
+            padding: 0.8rem;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: #ff9900;
+        }
+
+        /* 主要内容容器 */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* 个人简介模块 */
+        .about {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .about h2 {
+            color: #222;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #ff9900;
+            padding-bottom: 0.5rem;
+        }
+
+        .about p {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        /* 视频/摄影作品通用模块样式 */
+        .works-section {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .works-section h2 {
+            color: #222;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #ff9900;
+            padding-bottom: 0.5rem;
+        }
+
+        /* 视频/摄影通用卡片网格布局 - 完全共用 */
+        .work-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* 视频/摄影通用卡片样式 - 完全共用，无任何差异 */
+        .work-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .work-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .work-card img {
+            width: 100%;
+            height: 210px;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+        }
+
+        .work-card .work-info {
+            padding: 1rem;
+        }
+
+        .work-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .work-card p {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        /* ✅ 彻底修复：强制所有按钮（a/button）显示黄色背景 */
+        .view-btn, .view-btn:link, .view-btn:visited {
+            display: inline-block !important;
+            background-color: #ff9900 !important;
+            color: white !important;
+            text-decoration: none !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 4px !important;
+            font-size: 0.8rem !important;
+            cursor: pointer !important;
+            border: none !important;
+            line-height: 1.2 !important;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        .view-btn:hover, .view-btn:active {
+            background-color: #e68a00 !important;
+            color: white !important;
+            text-decoration: none !important;
+        }
+
+        /* 图片组轮播弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90vh;
+            width: 1000px;
+        }
+
+        .carousel-img {
+            width: 100%;
+            height: auto;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.3);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            z-index: 10;
+        }
+
+        .carousel-btn:hover {
+            background: rgba(255,255,255,0.6);
+        }
+
+        .prev-btn {
+            left: -20px;
+        }
+
+        .next-btn {
+            right: -20px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #ff3333;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .carousel-info {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: white;
+            background: rgba(0,0,0,0.5);
+            padding: 0.5rem;
+            border-radius: 0 0 8px 8px;
+        }
+
+        /* 移动端适配弹窗按钮 */
+        @media (max-width: 768px) {
+            .prev-btn {
+                left: 0;
+            }
+            .next-btn {
+                right: 0;
+            }
+            .carousel-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 1rem;
+            }
+        }
+
+        /* 联系方式模块 */
+        .contact {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .contact h2 {
+            color: #222;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #ff9900;
+            padding-bottom: 0.5rem;
+        }
+
+        .contact ul {
+            list-style: none;
+            font-size: 1rem;
+        }
+
+        .contact li {
+            margin-bottom: 0.8rem;
+        }
+
+        .contact li strong {
+            color: #222;
+            width: 100px;
+            display: inline-block;
+        }
+
+        /* 页脚样式 */
+        footer {
+            background-color: #222;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+
+        /* 全局移动端适配 - 视频/摄影板块同步适配 */
+        @media (max-width: 768px) {
+            nav a {
+                display: block;
+                margin: 0.5rem 0;
+            }
+
+            .about, .works-section, .contact {
+                padding: 1.5rem 1rem;
+            }
+
+            .work-card img {
+                height: 160px; /* 移动端封面图高度同步 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部：姓名和职业 -->
+    <header>
+        <h1>林晓铎 - 视频创作者（导演、摄影、剪辑）</h1>
+        <p>专注宣传片/纪录片/短视频创作</p>
+    </header>
+
+    <!-- 导航栏 -->
+    <nav>
+        <a href="#about">个人简介</a>
+        <a href="#video-works">视频作品</a>
+        <a href="#photo-works">摄影作品</a>
+        <a href="#contact">联系方式</a>
+    </nav>
+
+    <!-- 主要内容 -->
+    <div class="container">
+        <!-- 个人简介模块 -->
+        <section class="about" id="about">
+            <h2>个人简介</h2>
+            <p>您好，我是林晓铎，拥有近10年视频全案实战经验，擅长【编导策划+拍摄剪辑+IP运营+项目管理】全流程落地。</p>
+            <p>具备复合型经验技能，适配品牌宣传、企业文化传播、短视频运营等多赛道需求，累计交付品牌宣传片、微电影、短视频、赛事直播等项目300+。</p>
+            <p>熟练操作索尼FX3、A7M4、大疆无人机及稳定器等主流拍摄器材，以及 Pr、Ae、达芬奇、剪映等后期制作软件，擅长使用各类AI工具辅助创作。</p>
+        </section>
+
+        <!-- 视频作品展示模块 -->
+        <section class="works-section" id="video-works">
+            <h2>视频作品</h2>
+            <div class="work-grid">
+                <!-- 视频作品1 -->
+                <div class="work-card">
+                    <img src="https://img.heliar.top/file/1768894459640_Snipaste_2026-01-20_15-28-44.jpg" alt="作品1封面">
+                    <div class="work-info">
+                        <h3>产品广告（导演+主摄）</h3>
+                        <p>本片为某监理公司新一代产品广告，通过科技感的镜头设计，突出产品卖点和场景化体验。</p>
+                        <a href="https://www.xinpianchang.com/a13586597" target="_blank" class="view-btn">查看作品</a>
+                    </div>
+                </div>
+
+                <!-- 视频作品2 -->
+                <div class="work-card">
+                    <img src="https://img.heliar.top/file/1768895282978_Snipaste_2026-01-20_15-47-31.jpg" alt="作品2封面">
+                    <div class="work-info">
+                        <h3>党政宣传片（导演+主摄+剪辑）</h3>
+                        <p>本片为某电力工程单位党建品牌宣传片，作品参加《国企基层党建工作创新大赛及党建品牌、党建基地申报评选活动》。</p>
+                        <a href="https://www.xinpianchang.com/a13586628" target="_blank" class="view-btn">查看作品</a>
+                    </div>
+                </div>
+
+                <!-- 视频作品3 -->
+                <div class="work-card">
+                    <img src="https://img.heliar.top/file/1768971074366_Snipaste_2026-01-20_16-06-06.jpg" alt="作品3封面">
+                    <div class="work-info">
+                        <h3>企业宣传片（导演+主摄+剪辑）</h3>
+                        <p>本片为某电力公司企业宣传片，对外展示其企业文化及业务范围。</p>
+                        <a href="https://www.xinpianchang.com/a13586687" target="_blank" class="view-btn">查看作品</a>
+                    </div>
+                </div>
+
+                <!-- 视频作品4 -->
+                <div class="work-card">
+                    <img src="https://img.heliar.top/file/1769408297120_油茶花开.jpg" alt="作品4封面">
+                    <div class="work-info">
+                        <h3>微电影（导演）</h3>
+                        <p>本片为某电力单位品牌微电影，根据客户需求设计剧情及分镜脚本，通过剧情演绎输出企业文化、彰显品牌价值。</p>
+                        <a href="https://www.xinpianchang.com/a13586711" target="_blank" class="view-btn">查看作品</a>
+                    </div>
+                </div>
+
+                <!-- 视频作品5 -->
+                <div class="work-card">
+                    <img src="https://img.heliar.top/file/1768900526044_Snipaste_2026-01-20_16-41-20.jpg" alt="作品5封面">
+                    <div class="work-info">
+                        <h3>人物宣传片（导演+主摄）</h3>
+                        <p>本片为某电力单位《班组长说》系列人物宣传片，以人物专访+情景演绎的形式，突出典型人物、弘扬精神品质，在单位内部形成榜样力量。</p>
+                        <a href="https://www.xinpianchang.com/a13586734" target="_blank" class="view-btn">查看作品</a>
+                    </div>
+                </div>
+
+                <!-- 视频作品6 -->
+                <div class="work-card">
+                    <img src="https://img.heliar.top/file/1768900538481_Snipaste_2026-01-20_17-01-02.jpg" alt="作品6封面">
+                    <div class="work-info">
+                        <h3>活动花絮快剪（主摄+剪辑）</h3>
+                        <p>本片为某监理单位智能监理小车新品发布会活动总结，以花絮快剪的形式回顾整场发布会。</p>
+                        <a href="https://www.xinpianchang.com/a13586789" target="_blank" class="view-btn">查看作品</a>
+                    </div>
+                </div>
+
+                <!-- 视频作品7 -->
+                <div class="work-card">
+                    <img src="https://img.heliar.top/file/1769001021928_DSC01537_mix02.jpg" alt="作品7封面">
+                    <div class="work-info">
+                        <h3>视觉探索（拍摄+剪辑）</h3>
+                        <p>本片为个人视觉创意作品，以街头风格的镜头和配乐呈现一场“机车梦”。</p>
+                        <a href="https://www.xinpianchang.com/a13588152" target="_blank" class="view-btn">查看作品</a>
+                    </div>
+                </div>
+
+                <!-- 视频作品8 -->
+                <div class="work-card">
+                    <img src="https://img.heliar.top/file/1769394597301_新会陈皮-横.jpg" alt="作品8封面">
+                    <div class="work-info">
+                        <h3>短视频 - 探店vlog（剪辑）</h3>
+                        <p>本片为某自媒体账号探店vlog，以迎合短视频受众的节奏风格介绍一款新会陈皮。</p>
+                        <a href="https://www.xinpianchang.com/a13601732" target="_blank" class="view-btn">查看作品</a>
+                    </div>
+                </div>
+
+                <!-- 视频作品9 -->
+                <div class="work-card">
+                    <img src="https://img.heliar.top/file/1769005278237_20241115莫奈何杯.jpg" alt="作品9封面">
+                    <div class="work-info">
+                        <h3>短视频 - 产品宣传（拍摄+剪辑）</h3>
+                        <p>本片为某拍卖公司产品广告，通过主播讲解+特写镜头，让古董收藏爱好者充分了解器物。</p>
+                        <a href="https://www.xinpianchang.com/a13588174" target="_blank" class="view-btn">查看作品</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 摄影作品展示模块 -->
+        <section class="works-section" id="photo-works">
+            <h2>摄影作品</h2>
+            <div class="work-grid">
+                <!-- 摄影作品1 -->
+                <div class="work-card">
+                    <img src="https://img.heliar.top/file/1768973122039_DSC05512-1.jpg" alt="活动公关">
+                    <div class="work-info">
+                        <h3>活动公关</h3>
+                        <p>各类活动摄影、花絮记录</p>
+                        <a href="javascript:;" class="view-btn" onclick="openCarousel('活动公关')">查看详情</a>
+                    </div>
+                </div>
+
+                <!-- 摄影作品2 -->
+                <div class="work-card">
+                    <img src="https://img.heliar.top/file/1768972735501_DSC09679.jpg" alt="产品静物">
+                    <div class="work-info">
+                        <h3>产品静物</h3>
+                        <p>汽车、古董艺术品等产品广告宣传</p>
+                        <a href="javascript:;" class="view-btn" onclick="openCarousel('产品静物')">查看详情</a>
+                    </div>
+                </div>
+
+                <!-- 摄影作品3 -->
+                <div class="work-card">
+                    <img src="https://img.heliar.top/file/1769446009312_微信图片_20260127004109.jpg" alt="人像摄影">
+                    <div class="work-info">
+                        <h3>人像摄影</h3>
+                        <p>包含校园写真、民族风情、旅拍等人像摄影</p>
+                        <a href="javascript:;" class="view-btn" onclick="openCarousel('人像摄影')">查看详情</a>
+                    </div>
+                </div>
+
+                <!-- 摄影作品4 -->
+                <div class="work-card">
+                    <img src="https://img.heliar.top/file/1769006335680_IMG_20190607_180617_mix01.jpg" alt="人文风情">
+                    <div class="work-info">
+                        <h3>人文风情</h3>
+                        <p>各类人文街景、民俗风情摄影作品</p>
+                        <a href="javascript:;" class="view-btn" onclick="openCarousel('人文风情')">查看详情</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 联系方式模块 -->
+        <section class="contact" id="contact">
+            <h2>联系方式</h2>
+            <ul>
+                <li><strong>姓名：</strong>林晓铎</li>
+                <li><strong>电话：</strong>13728012455</li>
+                <li><strong>微信：</strong>X336853</li>
+                <li><strong>邮箱：</strong>441092658@qq.com</li>
+                <li><strong>作品集：</strong><a href="https://pan.baidu.com/s/1va5_ms2JFz7pT-POTc5drw?pwd=94XD" target="_blank">百度网盘链接（点击直达）</a></li>
+                <li><strong>自媒体账号：</strong>Duó大事儿、Mark高球圈、佳韵队长、高尔夫频道发布</li>
+            </ul>
+        </section>
+    </div>
+
+    <!-- 图片组轮播弹窗 -->
+    <div class="modal-overlay" id="carouselModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeCarousel()">×</button>
+            <button class="carousel-btn prev-btn" onclick="changeSlide(-1)">←</button>
+            <img src="" alt="轮播图片" class="carousel-img" id="currentCarouselImg">
+            <button class="carousel-btn next-btn" onclick="changeSlide(1)">→</button>
+            <div class="carousel-info" id="carouselInfo">1/4 | 人像摄影 - 城市街头 | 2025.05</div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>© 2026 林晓铎 - 作品均为本人创作，仅用于展示，不作商业用途</p>
+    </footer>
+
+    <!-- 轮播功能JS代码 -->
+    <script>
+        const photoGroups = {
+            活动公关: [
+                { url: "https://img.heliar.top/file/1768973122039_DSC05512-1.jpg", desc: "活动摄影 - 某汽车品牌车主活动" },
+                { url: "https://img.heliar.top/file/1768973131156_DSC06102-9.jpg", desc: "活动摄影 - 某汽车品牌车主活动" },
+                { url: "https://img.heliar.top/file/1768973125911_DSC05495-12.jpg", desc: "活动摄影 - 某汽车品牌车主活动" },
+                { url: "https://img.heliar.top/file/1768973132648_DSC06165-10.jpg", desc: "活动摄影 - 某汽车品牌车主活动" },
+                { url: "https://img.heliar.top/file/1768973663248_DSC08811.jpg", desc: "活动摄影 - 某市政公关推广活动" },
+                { url: "https://img.heliar.top/file/1768973653253_DSC08625.jpg", desc: "活动摄影 - 某市政公关推广活动" },
+                { url: "https://img.heliar.top/file/1768973657849_DSC08281.jpg", desc: "活动摄影 - 某市政公关推广活动" },
+            ],
+            产品静物: [
+                { url: "https://img.heliar.top/file/1768972737907_DSC09711.jpg", desc: "产品静物 - 仰望U8" },
+                { url: "https://img.heliar.top/file/1768972735501_DSC09679.jpg", desc: "产品静物 - 仰望U8" },
+                { url: "https://img.heliar.top/file/1768972736084_DSC09680.jpg", desc: "产品静物 - 仰望U8" },
+                { url: "https://img.heliar.top/file/1768972729313_DSC09682.jpg", desc: "产品静物 - 仰望U8" },
+                { url: "https://img.heliar.top/file/1768972747367_DSC09717.jpg", desc: "产品静物 - 仰望U8" },
+                { url: "https://img.heliar.top/file/1768972731395_DSC09685.jpg", desc: "产品静物 - 仰望U8" },
+                { url: "https://img.heliar.top/file/1769404652677_IMG20241104171748.jpg", desc: "产品静物 - 古董艺术品" },
+                { url: "https://img.heliar.top/file/1769404657640_IMG_20260126_125456.jpg", desc: "产品静物 - 古董艺术品" },
+                { url: "https://img.heliar.top/file/1769001021928_DSC01537_mix02.jpg", desc: "产品静物 - 铃木机车" }
+            ],
+            人像摄影: [
+                { url: "https://img.heliar.top/file/1769446009312_微信图片_20260127004109.jpg", desc: "人像摄影 - 旅拍" },
+                { url: "https://img.heliar.top/file/1769446006986_微信图片_20260127004152.jpg", desc: "人像摄影 - 旅拍" },
+                { url: "https://img.heliar.top/file/1769446025984_微信图片_20260127004548.jpg", desc: "人像摄影 - 旅拍" },
+                { url: "https://img.heliar.top/file/1768975487292_DSC00190.jpg", desc: "人像摄影 - 民族风情" },
+                { url: "https://img.heliar.top/file/1768975488344_DSC00159.jpg", desc: "人像摄影 - 民族风情" },
+                { url: "https://img.heliar.top/file/1768975487624_DSC00178.jpg", desc: "人像摄影 - 民族风情" },
+                { url: "https://img.heliar.top/file/1768975331582_DSC06332.jpg", desc: "人像摄影 - 校园写真" },
+                { url: "https://img.heliar.top/file/1768975331369_DSC06476.jpg", desc: "人像摄影 - 校园写真" },
+                { url: "https://img.heliar.top/file/1768975323553_DSC06615.jpg", desc: "人像摄影 - 校园写真" },
+                { url: "https://img.heliar.top/file/1769404723902_IMG20250209150752.jpg", desc: "人像摄影 - 潮流街区写真" },
+                { url: "https://img.heliar.top/file/1769404705013_IMG20250209150256.jpg", desc: "人像摄影 - 潮流街区写真" },
+                { url: "https://img.heliar.top/file/1769404719937_IMG20250209145653.jpg", desc: "人像摄影 - 潮流街区写真" },
+                { url: "https://img.heliar.top/file/1768977066580_DSC00435_mix01.jpg", desc: "人像摄影 - 旅拍" },
+                { url: "https://img.heliar.top/file/1769008894966_DSC09379_mix01.jpg", desc: "人像摄影 - 旅拍" }
+            ],
+            人文风情: [
+                { url: "https://img.heliar.top/file/1769006335680_IMG_20190607_180617_mix01.jpg", desc: "人文风情 - 广州扫街" },
+                { url: "https://img.heliar.top/file/1769404722431_IMG20250924165532.jpg", desc: "人文风情 - 广州扫街" },
+                { url: "https://img.heliar.top/file/1769404727324_IMG20241127171107.jpg", desc: "人文风情 - 广州扫街" },
+                { url: "https://img.heliar.top/file/1769404655180_IMG20241211162211.jpg", desc: "人文风情 - 广州扫街" },
+                { url: "https://img.heliar.top/file/1769480645361_IMG_20170627_191647_mix01.jpg", desc: "人文风情 - 故宫全景" },
+                { url: "https://img.heliar.top/file/1769404718075_IMG20241129165318.jpg", desc: "人文风情 - 高尔夫球场风光" },
+                { url: "https://img.heliar.top/file/1769001114151_IMG_20191030_152730_mix01.jpg", desc: "人文风情 - 北京大兴机场" },
+                { url: "https://img.heliar.top/file/1769001257974_IMG_20191030_180115_mix01.jpg", desc: "人文风情 - 北京大兴机场" },
+                { url: "https://img.heliar.top/file/1769404653103_IMG20251107162209.jpg", desc: "人文风情 - 车站掠影" },
+                { url: "https://img.heliar.top/file/1769000925188_IMG_20170127_163142_mix01.jpg", desc: "人文风情 - 节日民俗" }
+            ]
+        };
+
+        let currentGroup = "";
+        let currentIndex = 0;
+
+        function openCarousel(groupName) {
+            currentGroup = groupName;
+            currentIndex = 0;
+            updateCarousel();
+            document.getElementById("carouselModal").style.display = "flex";
+            document.addEventListener("keydown", escClose);
+        }
+
+        function closeCarousel() {
+            document.getElementById("carouselModal").style.display = "none";
+            document.removeEventListener("keydown", escClose);
+        }
+
+        function escClose(e) {
+            if (e.key === "Escape") closeCarousel();
+        }
+
+        function changeSlide(direction) {
+            const group = photoGroups[currentGroup];
+            currentIndex = (currentIndex + direction + group.length) % group.length;
+            updateCarousel();
+        }
+
+        function updateCarousel() {
+            const group = photoGroups[currentGroup];
+            const currentPhoto = group[currentIndex];
+            document.getElementById("currentCarouselImg").src = currentPhoto.url;
+            document.getElementById("currentCarouselImg").alt = currentPhoto.desc;
+            const infoText = `${currentIndex + 1}/${group.length} | ${currentPhoto.desc}`;
+            document.getElementById("carouselInfo").textContent = infoText;
+        }
+
+        document.getElementById("carouselModal").addEventListener("click", function(e) {
+            if (e.target === this) closeCarousel();
+        });
+    </script>
+</body>
+</html>
